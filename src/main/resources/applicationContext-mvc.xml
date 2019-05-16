@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+">
+    <!--1.扫描controller的包-->
+    <context:component-scan base-package="com.majianwei.controller" />
+
+    <!-- 2.restful风格，支持静态资源读取
+    之前讲SpringMVC的时候，我们讲了一个RESTful的风格
+    咱们要支持RESTful的风格,根据配置就会拦截到静态资源(图片,css,js访问不到)-->
+    <!-- 静态资源放行 -->
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven></mvc:annotation-driven>
+
+    <!-- 3.支持SpringMVC的注解 -->
+    <mvc:annotation-driven />
+
+    <!-- 4.视图解析器(前缀与后缀) -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+    <!-- 5.上传解析器(io,fileupload) -->
+
+    <!--
+        可以直接在SpringMVC的配置文件中引入Spring的核心配置文件
+        但是不建议这么使用: 当以后Spring要集成其它框架(shiro,lun..)的时候,就会出问题了!
+        <import resource="classpath:applicationContext.xml" />
+    -->
+    <!-- 文件上传的配置 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize">
+            <value>100000000</value>
+        </property>
+        <property name="defaultEncoding">
+            <value>UTF-8</value>
+        </property>
+    </bean>
+
+    <!-- 解决no serializer问题 -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json; charset=UTF-8</value>
+                        <value>application/x-www-form-urlencoded; charset=UTF-8</value>
+                    </list>
+                </property>
+                <!-- No serializer:配置 objectMapper 为我们自定义扩展后的 CustomMapper,解决了返回对象有关系对象的报错问题 -->
+                <property name="objectMapper">
+                    <bean class="com.majianwei.common.CustomMapper"></bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+</beans>

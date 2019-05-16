@@ -1,0 +1,29 @@
+[{
+  "id":1,
+  "text":"基本数据",
+  "children":[{
+    "text":"用户管理",
+    "iconCls":"icon-save",
+    "url":"/employee/index"
+  },{
+    "text":"部门管理",
+    "url":"/department/index"
+  },{
+    "text":"角色管理",
+    "url":"/role/index"
+  }]
+},{
+  "id":2,
+  "text":"基本数据2",
+  "children":[{
+    "text":"用户管理2",
+    "iconCls":"icon-save",
+    "url":"/employee/index"
+  },{
+    "text":"部门管理2",
+    "url":"/department/index"
+  },{
+    "text":"角色管理2",
+    "url":"/role/index"
+  }]
+}]

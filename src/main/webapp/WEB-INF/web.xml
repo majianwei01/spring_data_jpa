@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         id="WebApp_ID" version="3.0">
+  <!-- 配置Spring -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:applicContext.xml</param-value>
+  </context-param>
+    <context-param>
+        <param-name/>
+        <param-value/>
+    </context-param>
+    <context-param>
+        <param-name/>
+        <param-value/>
+    </context-param>
+    <!-- 监听Spring启动 -->
+  <listener>
+    <!-- 监听servletcontext对象 -->
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- 先配置springmvc的加载 -->
+  <servlet>
+    <servlet-name>core</servlet-name>
+    <!-- springmvc中使用servlet技术实现的核心控制器 -->
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+
+    <!-- 配置加载springmvc的配置文件 -->
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:applicationContext-mvc.xml</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>core</servlet-name>
+    <!-- 配置： / 【支持一种编程风格，restful风格】 /* 【不能配】 *.后缀 【最保险】 -->
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+
+  <!-- 配置过滤器 提交数据的时候，post请求中文乱码问题 -->
+  <filter>
+    <filter-name>character</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <!-- 设置处理乱码问题的编码 -->
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>character</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!--解决no session问题-->
+  <filter>
+    <filter-name>openEntityManager</filter-name>
+    <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>openEntityManager</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>shiroFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <init-param>
+      <param-name>targetFilterLifecycle</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+  <filter-name>shiroFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+</web-app>

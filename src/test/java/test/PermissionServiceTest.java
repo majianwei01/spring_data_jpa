@@ -1,0 +1,32 @@
+package com.majianwei.test;
+
+import com.majianwei.common.JsonResult;
+import com.majianwei.common.UIPage;
+import com.majianwei.domain.Permission;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Controller;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.majianwei.query.PermissionQuery;
+import com.majianwei.service.IPermissionService;
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicContext.xml")
+public class PermissionServiceTest {
+    @Autowired
+    private IPermissionService permissionService;
+
+    @Test
+    public void queryAll() throws Exception{
+        permissionService.queryAll().forEach(e-> System.out.println(e));
+
+    }
+
+}

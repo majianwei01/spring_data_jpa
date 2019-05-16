@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx.xsd
+         http://www.springframework.org/schema/data/jpa
+         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <!--spring扫描注解-->
+    <context:component-scan base-package="com.majianwei.repository"/>
+    <context:component-scan base-package="com.majianwei.service"/>
+    <!--
+        xml的约束 : 防止你写错,给你提示
+                    dtd[比较简单],schema[一个xml中引入多个约束]
+                    必需加classpath(不加的话web项目中找到这个文件)
+    -->
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!--
+        db.properties -> dataSource -> EntityManagerFactory ->
+                DAO -> service -> controller + easyui
+    -->
+
+    <!--配置datasource(四大金刚)-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!--
+        配置一个EntityManagerFactory(四大金刚,方言,建表策略,是否显示SQL)
+    -->
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <!--数据源-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--packages(包)ToScan(扫描):包的扫描-->
+        <property name="packagesToScan" value="com.majianwei.domain"/>
+        <!--
+            配置一个JPA的适配器:hibernate  Adapter:适配器
+            jpaVendorAdapter：JPA是用哪一个框架来实现的
+         -->
+        <property name="jpaVendorAdapter">
+            <!-- 使用hiberante的适配实现 -->
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <!-- 方言 -->
+                <property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect"/>
+                <!-- 建表策略：true=update -->
+                <property name="generateDdl" value="true"/>
+                <!--显示sql-->
+                <property name="showSql" value="true"/>
+            </bean>
+        </property>
+
+        <!--JPA添加事务管理器-->
+    </bean>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!--springdatajpa扫描注解，还要添加data/jpa头-->
+    <jpa:repositories base-package="com.majianwei.repository"
+                      entity-manager-factory-ref="entityManagerFactory"
+                      transaction-manager-ref="transactionManager"
+                      factory-class="com.majianwei.repository.BaseRepositoryFactoryBean"/>
+
+    <!--引入shiro-->
+    <import resource="classpath:applicationContext-shiro.xml" />
+    <!--spring集成所有以application开头的xml文件（框架）-->
+    <import resource="classpath:plugin/applicationContext-*.xml" />
+</beans>
